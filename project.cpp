@@ -53,15 +53,22 @@ void CVThread () {
 			ok = false;
             break;
 		}
-		if ( descriptor2.empty() ) {
+		/*if ( descriptor2.empty() ) {
 			cvError(0,"MatchFinder","2nd descriptor empty",__FILE__,__LINE__);
 			ok = false;
             break;
-		}
+		}*/
 
 
 
 		descriptor1.convertTo(descriptor1, CV_32F); descriptor2.convertTo(descriptor2, CV_32F);
+
+        if (descriptor2.empty()) {
+		    if (waitKey(33) == 27) {
+			    ok = false;
+		    }
+            continue;
+        }
 
 		
 		vector<DMatch> matches;
@@ -98,7 +105,7 @@ void CVThread () {
 		/*imshow("image2", imageMatch);
 		waitKey(0);
 		destroyAllWindows();*/
-        if (GMatches.size() <= 6) {
+        if (GMatches.size() <= 8) {
             imshow("Match", imageMatch);
 		    if (waitKey(33) == 27) {
 			    ok = false;
@@ -116,6 +123,14 @@ void CVThread () {
 		}
 
 		Mat homog = findHomography(staticImage, videoImage, CV_RANSAC);
+
+        if (homog.empty()) {
+            imshow("Match", imageMatch);
+		    if (waitKey(33) == 27) {
+			    ok = false;
+		    }
+            continue;
+        }
 
 		vector<Point2f> corner(4);
 
@@ -149,13 +164,6 @@ void CVThread () {
 double heightI/*y*/, widthI/*x*/;
 
 void drawCube() {
-    /*glBegin(GL_POLYGON);
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(widthI/2, heightI/2, -2.0);
-        glVertex3f((widthI/2) * -1, heightI/2, -2.0);
-        glVertex3f((widthI/2) * -1, (heightI/2) * -1, -2.0);
-        glVertex3f(widthI/2, (heightI/2) * -1, -2.0);
-    glEnd(); */
     glBegin(GL_QUADS);
         //front
         glColor3f(1.0, 0.0, 0.0);
